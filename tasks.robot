@@ -13,6 +13,7 @@ Library             RPA.Notifier
 Library             RPA.FileSystem
 Library             RPA.RobotLogListener
 Library             Collections
+Library             RPA.Smartsheet
 # Library    RPA.Excel.Application
 
 
@@ -25,7 +26,7 @@ ${dropDownJornada}          //div[@class='styled__DropdownContainer-sc-d9k1bl-0 
 # ${equipoCasa}    //div[@class='styled__ContainerName-sc-xzosab-2 bpVmwZ']//p[@class='styled__TextStyled-sc-1mby3k1-0 kFavhB']
 # ${equipoFuera}    //div[@class='styled__ContainerName-sc-xzosab-2 fOhNvl']//p[@class='styled__TextStyled-sc-1mby3k1-0 kFavhB']
 ${totalPartidosJornada}     //td[@class='styled__TableCell-sc-43wy8s-5 styled__TableCellLink-sc-43wy8s-8 hhcbkq fVeghq']
-${workbook_path}            C:\\cursos\\robot frameworks - selenium - python\\robot\\testData\\futbol.xlsx
+${workbook_path}            C:\\git\\laLiga_robotFramework\\testData\\futbol.xlsx
 ${shell_name}               ${EMPTY}
 
 
@@ -137,7 +138,7 @@ Read excel file_exist
         log    sheet is present in the escel
     END
     Add rows to excel for team1    &{Dictionary1}
-    # Add rows to excel for team1    &{Dictionary2}
+    Add rows to excel for team1    &{Dictionary2}
 
 Add rows to excel for team1
     [Arguments]    &{Dictionary}
@@ -145,9 +146,19 @@ Add rows to excel for team1
     Open Workbook    ${workbook_path}
     ${teamname}=    Get From Dictionary    ${Dictionary}    teams
     Log    ${teamname}
-    ${worksheet_name}=    Read Worksheet    name=${teamName}
-    Append Rows To Worksheet    ${Dictionary}    header=${TRUE}
-    Save Workbook
+    @{sheets}=    List Worksheets
+    Read Worksheet    ${teamname}
+    FOR    ${sheet}    IN    @{sheets}
+        Log    ${sheet}
+        IF    '${sheet}' == '${teamname}'
+            Append Rows To Worksheet    ${Dictionary}    name=${teamname}    header=${TRUE}
+            Save Workbook
+            Close Workbook
+        END
+    END
+
+    # Append Rows To Worksheet    ${Active_Worksheet}    ${Dictionary}    header=${TRUE}
+    # Save Workbook
     Close Workbook
 
 Close widgets
