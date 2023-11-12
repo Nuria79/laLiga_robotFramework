@@ -3,20 +3,11 @@ Documentation       Template robot main suite.
 
 Library             RPA.Browser.Selenium
 Library             RPA.Excel.Files
-# Library    RPA.Robocorp.WorkItems
-# Library    String
-# Library    RPA.FTP
-# Library    RPA.Desktop
-# Library    XML
-# Library    OperatingSystem
-# Library    RPA.Notifier
 Library             RPA.FileSystem
-# Library    RPA.RobotLogListener
 Library             Collections
 Library             RPA.Windows
 Library             RPA.RobotLogListener
-# Library    RPA.Windows
-# Library    RPA.Smartsheet
+Library             RPA.Desktop
 
 
 *** Variables ***
@@ -27,118 +18,29 @@ ${btnStatistics}            //p[@class='styled__TextStyled-sc-1mby3k1-0 cYEkps' 
 ${dropDownJornada}          //div[@class='styled__DropdownContainer-sc-d9k1bl-0 gpdfZV']/ul[@class='styled__ItemsList-sc-d9k1bl-2 lofGQu']/li
 ${totalPartidosJornada}     //td[@class='styled__TableCell-sc-43wy8s-5 styled__TableCellLink-sc-43wy8s-8 hhcbkq fVeghq']
 ${workbook_path}            C:\\git\\laLiga_robotFramework\\testData\\futbol.xlsx
-# ${i}    1
 
 
 *** Tasks ***
 GetData
     ${jornadaRegistrada}=    Validate sheet
-    WHILE    '${jornadaRegistrada}' != 39
+    WHILE    ${jornadaRegistrada} != 39
         Log    ${jornadaRegistrada}
         Open laLiga
-        IF    ${jornadaRegistrada} == 1    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 2    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 3    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 4    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 5    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 6    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 7    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 8    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 9    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 10
+        ${jornada_sel_default}=    Run Keyword And Return Status
+        ...    Element Should Be Visible
+        ...    //p[text()='Jornada ${jornadaRegistrada}']
+        IF    not ${jornada_sel_default}    # jornada seleccionda por defecto en la lista
             selectJornada    ${jornadaRegistrada}
         END
-        IF    ${jornadaRegistrada} == 11
-            selectJornada    ${jornadaRegistrada}
+        # comprobamos si la jornada se ha jugado viendo si los partidos estan vs
+        ${jornada_jugada}=    getJornadaJugada
+        IF    ${jornada_jugada} != 10    # jornada no jugada aun
+            selectMatch    ${jornadaRegistrada}
+            ${jornadaRegistrada}=    Validate sheet
         END
-        IF    ${jornadaRegistrada} == 12
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 13
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 14
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 15
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 16
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 17
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 18
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 19
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 20
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 21
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 22
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 23
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 24
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 25
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 26
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 27
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 28
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 29
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 30
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 31
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 32
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 33
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 34
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada}== 35    selectJornada    ${jornadaRegistrada}
-        IF    ${jornadaRegistrada} == 36
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 37
-            selectJornada    ${jornadaRegistrada}
-        END
-        IF    ${jornadaRegistrada} == 38
-            selectJornada    ${jornadaRegistrada}
-        END
-        selectMatch    ${jornadaRegistrada}
-        ${jornadaRegistrada}=    Validate sheet
-        # ${jornadaRegistrada}=    Set Variable    39
+        Close Browser
+        ${jornadaRegistrada}=    Evaluate    ${jornadaRegistrada} + 1
     END
-
-    # Open laLiga
-    # ${items}=    getJornada
-    # selectJornada
-    # selectMatch
 
 
 *** Keywords ***
@@ -157,8 +59,7 @@ getJornada
 selectJornada
     [Arguments]    ${jornada}
     Click Element    //a[text()='Jornada ${jornada}']
-    # ...    //div[@class='styled__DropdownContainer-sc-d9k1bl-0 gpdfZV']/ul[@class='styled__ItemsList-sc-d9k1bl-2 lofGQu']/li[1]
-    Sleep    10s
+    Sleep    4s
 
 selectMatch
     [Arguments]    ${jornada}
@@ -168,20 +69,25 @@ selectMatch
         Wait Until Page Contains Element    //tbody/tr[starts-with(@class, 'styled__TableRow')]/td/a
         ${td_elements}=    Get WebElements    //tbody/tr[starts-with(@class, 'styled__TableRow')]/td/a
         log    ${td_elements}
-        Close widgets
-        Sleep    1s
         ${scroll_error}=    Run Keyword And Ignore Error    Scroll Element Into View    ${td_elements}[${i}]
         Wait Until Element Is Visible    ${td_elements}[${i}]    timeout=30s
-        Click Element    ${td_elements}[${i}]
+
+        ${enabled}=    Run Keyword And Return Status    Click Element    ${td_elements}[${i}]
+        IF    not ${enabled}
+            Close widgets
+            Click Element    ${td_elements}[${i}]
+        END
         Log    Scrolling result: ${scroll_error}
         Sleep    3s
+        ${scroll_error}=    Run Keyword And Ignore Error    Scroll Element Into View    ${btnStatistics}
         ${element-found}=    Run Keyword And Return Status
         ...    Element Should Be Visible
         ...    ${btnStatistics}
         ...    timeout=30s
         IF    ${element-found}    getData_Statistics
-        # getData_Statistics
         Close Browser
+        # END
+
         IF    ${i}< ${matches}-1
             Open laLiga
             SelectJornada    ${jornada}
@@ -189,15 +95,10 @@ selectMatch
     END
 
 getData_Statistics
-    # ${element-found}=    Run Keyword And Return Status    Element Should Be Visible    ${btnStatistics}    timeout=30s
-
-    # IF    ${element-found}
-    # ...    Click Element    ${btnStatistics}
+    Click Element    ${btnStatistics}
     ${equipo1}=    Create ListEquipoCasa
     ${equipo2}=    Create ListEquipoFuera
     Create Excel    ${equipo1}    ${equipo2}
-    # Wait Until Element Is Visible    ${btnStatistics}    timeout=30s
-    # Click Element    ${btnStatistics}
 
 Create Excel
     [Arguments]    ${equipo1}    ${equipo2}
@@ -267,23 +168,7 @@ Close widgets
         ELSE
             Log    Element not found: ${element}
         END
-        # IF    ${is_visible}    Click Element    ${element}
     END
-    # ${propaganda1}=    Run Keyword And Return Status
-    # ...    Element Should Be Visible
-    # ...    (//div[@class='rctfl-close rctfl-widget-close rctfl-widget-close-image'])[2]
-    # ...    timeout=20s
-    # ${propaganda2}=    Run Keyword And Return Status
-    # ...    Element Should Be Visible
-    # ...    (//div[@class='rctfl-close rctfl-widget-close rctfl-widget-close-image'])[1]
-    # ...    timeout=20s
-
-    # IF    ${propaganda1}
-    #    Click Element    (//div[@class='rctfl-close rctfl-widget-close rctfl-widget-close-image'])[2]
-    # END
-    # IF    ${propaganda2}
-    #    Click Element    (//div[@class='rctfl-close rctfl-widget-close rctfl-widget-close-image'])[1]
-    # END
 
 Get Equipo_casa
     ${equipo_casa}=    RPA.Browser.Selenium.Get Text
@@ -325,32 +210,44 @@ Get Matches
     ...    //div[@class='styled__ContainerName-sc-xzosab-2 bpVmwZ']//p[@class='styled__TextStyled-sc-1mby3k1-0 kFavhB']
     ${team2}=    RPA.Browser.Selenium.Get Text
     ...    //div[@class='styled__ContainerName-sc-xzosab-2 fOhNvl']//p[@class='styled__TextStyled-sc-1mby3k1-0 kFavhB']
-    ${teamMatch}=    Catenate    SEPARATOR=-    ${team1} ${team2}
+    ${teamMatch}=    Catenate    ${team1}    -    ${team2}
     Log    ${teamMatch}
     RETURN    ${teamMatch}
 
 Create ListEquipoCasa
     ${partido}=    Get Matches
+    ${resultado}=    getResultado
     ${tarjetasA_casa}=    Get Yellow_Cards_Casa
     ${tarjetasR_casa}=    Get Red_Cards_Casa
+    ${total_tarjetas}=    getTotalTarjetas
     ${corners_casa}=    Get Corners_Casa
+    ${total_corners}=    getTotalCorners
     &{equipo1}=    Create Dictionary
-    ...    partido=${partido}
-    ...    tarjetasA=${tarjetasA_casa}
-    ...    tarjetasR=${tarjetasR_casa}
-    ...    corners=${corners_casa}
+    ...    Partido=${partido}
+    ...    Resultado=${resultado}
+    ...    TarjetasA=${tarjetasA_casa}
+    ...    TarjetasR=${tarjetasR_casa}
+    ...    TotalTarjetas=${total_tarjetas}
+    ...    Corners=${corners_casa}
+    ...    TotalCorners=${total_corners}
     RETURN    ${equipo1}
 
 Create ListEquipoFuera
     ${partido}=    Get Matches
+    ${resultado}=    getResultado
     ${tarjetasA_fuera}=    Get Yellow_Cards_Fuera
     ${tarjetasR_fuera}=    Get Red_Cards_Fuera
+    ${total_tarjetas}=    getTotalTarjetas
     ${corners_fuera}=    Get Corners_Fuera
+    ${total_corners}=    getTotalCorners
     &{equipo2}=    Create Dictionary
-    ...    partido=${partido}
-    ...    tarjetasA=${tarjetasA_fuera}
-    ...    tarjetasR=${tarjetasR_fuera}
-    ...    corners=${corners_fuera}
+    ...    Partido=${partido}
+    ...    Resultado=${resultado}
+    ...    TarjetasA=${tarjetasA_fuera}
+    ...    TarjetasR=${tarjetasR_fuera}
+    ...    TotalTarjetas=${total_tarjetas}
+    ...    Corners=${corners_fuera}
+    ...    TotalCorners=${total_corners}
     RETURN    ${equipo2}
 
 Validate sheet
@@ -361,12 +258,33 @@ Validate sheet
         ${sheet_name}=    Get From List    ${sheets}    1
         ${sheet}=    Read Worksheet    ${sheet_name}
         ${count}=    Get Length    ${sheet}
-        Log    ${count}
+        Log    ${count}-1
     ELSE
         ${count}=    Set Variable    1
     END
     RETURN    ${count}
 
-CheckMatchNotPlayed
-    ${played}=    Run Keyword And Return Status    Element Should Be Visible    //p[text()=' VS ']
-    RETURN    ${played}
+getJornadaJugada
+    ${jornada_aplazada}=    Get WebElements    //p[text()=' VS ']
+    ${count}=    Get Element Count    ${jornada_aplazada}
+    RETURN    ${count}
+
+getResultado
+    ${res_casa}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 kZeLZM'])[1]
+    ${res_fuera}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 kZeLZM'])[2]
+    ${resultado}=    Catenate    ${res_casa}    -    ${res_fuera}
+    RETURN    ${resultado}
+
+getTotalTarjetas
+    ${yellowCard_fuera}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 iPYgyC'])[10]
+    ${yellowCard_casa}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 iPYgyC'])[9]
+    ${redCard_casa}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 iPYgyC'])[11]
+    ${redCard_fuera}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 iPYgyC'])[12]
+    ${total_tarjetas}=    Evaluate    ${yellowCard_casa} + ${yellowCard_fuera} + ${redCard_casa} + ${redCard_fuera}
+    RETURN    ${total_tarjetas}
+
+getTotalCorners
+    ${corner_casa}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 iPYgyC'])[15]
+    ${corner_fuera}=    RPA.Browser.Selenium.Get Text    (//p[@class='styled__TextStyled-sc-1mby3k1-0 iPYgyC'])[16]
+    ${total_corners}=    Evaluate    ${corner_casa} + ${corner_fuera}
+    RETURN    ${total_corners}
